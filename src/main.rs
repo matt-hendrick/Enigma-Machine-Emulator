@@ -1,4 +1,9 @@
+mod enigma;
+mod plugboard;
+mod reflector;
 mod rotor;
+use enigma::Enigma;
+use plugboard::Plugboard;
 use rotor::Rotor;
 use std::env::{args, Args};
 
@@ -7,11 +12,17 @@ fn main() {
 
     println!("Args were: {:?}", args);
 
-    let mut rotor: Rotor = Rotor::new("I", 2, 3, 3);
+    // let mut rotor: Rotor = Rotor::new("I", 2, 3);
 
-    println!("{}, {}", rotor.is_at_notch(), rotor.get_rotor_position());
-    rotor.reset_rotor_position();
-    println!("{}, {}", rotor.is_at_notch(), rotor.get_rotor_position());
+    // println!("{}, {}", rotor.is_at_notch(), rotor.get_rotor_position());
+    // rotor.increment_rotor_position();
+    // println!("{}, {}", rotor.is_at_notch(), rotor.get_rotor_position());
+
+    // let mut plugboard: Plugboard = Plugboard::new("abcdefghij");
+
+    let mut enigma: Enigma = Enigma::new("123", "123", "321", "B", "ABCDEFGHIJ");
+
+    println!("{:?}", enigma)
 }
 
 fn parse_args() -> Vec<String> {
