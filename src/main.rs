@@ -1,3 +1,4 @@
+mod charindex;
 mod enigma;
 mod plugboard;
 mod reflector;
@@ -22,7 +23,11 @@ fn main() {
 
     let mut enigma: Enigma = Enigma::new("123", "123", "321", "B", "ABCDEFGHIJ");
 
-    println!("Enigma: {:?}", enigma)
+    println!("Enigma: {:?}", enigma);
+
+    assert!(enigma.forward('A') == 4);
+    enigma.forward('A');
+    enigma.backward('A');
 }
 
 fn parse_args() -> Vec<String> {

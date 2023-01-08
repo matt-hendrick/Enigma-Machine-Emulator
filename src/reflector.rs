@@ -11,7 +11,7 @@ impl Reflector {
     }
 
     // TODO: Implement this
-    pub fn encode(index: i32) {}
+    pub fn encode(index: u32) {}
 }
 
 // TODO: Probably can swap for Enums
