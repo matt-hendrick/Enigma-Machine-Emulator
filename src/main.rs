@@ -8,9 +8,9 @@ use rotor::Rotor;
 use std::env::{args, Args};
 
 fn main() {
-    let args: Vec<String> = parse_args();
+    // let args: Vec<String> = parse_args();
 
-    println!("Args were: {:?}", args);
+    // println!("Args were: {:?}", args);
 
     // let mut rotor: Rotor = Rotor::new("I", 2, 3);
 
@@ -22,7 +22,7 @@ fn main() {
 
     let mut enigma: Enigma = Enigma::new("123", "123", "321", "B", "ABCDEFGHIJ");
 
-    println!("{:?}", enigma)
+    println!("Enigma: {:?}", enigma)
 }
 
 fn parse_args() -> Vec<String> {

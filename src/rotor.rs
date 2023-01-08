@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 #[derive(Debug)]
 pub struct Rotor {
     rotor_type: i32,
-    forward_wiring: Vec<char>,
-    inverse_wiring: Vec<char>,
+    forward_wiring: Vec<usize>,
+    inverse_wiring: Vec<usize>,
     rotor_position: i32,
     notch_position: i32,
     ring_setting: i32,
@@ -23,20 +25,17 @@ impl Rotor {
 
     fn init(
         rotor_type: i32,
-        forward_wiring: Vec<char>,
+        wiring: Vec<char>,
         rotor_position: i32,
         notch_position: i32,
         ring_setting: i32,
     ) -> Self {
-        // TODO: It appears that Enigma inverse wirings aren't just the reverse of the forwarding wiring. Figure that out
-        // Can also either remove the init function or include the get_wiring_table call here
-        let mut inverse_wiring: Vec<char> = forward_wiring.to_vec();
-        inverse_wiring.reverse();
+        let mut forward_wiring: Vec<usize> = encode_wiring(wiring);
 
         Rotor {
             rotor_type: rotor_type,
+            inverse_wiring: reverse_wiring(&forward_wiring),
             forward_wiring: forward_wiring,
-            inverse_wiring: inverse_wiring,
             rotor_position: rotor_position,
             notch_position: notch_position,
             ring_setting: ring_setting,
@@ -61,6 +60,7 @@ impl Rotor {
 
 // TODO: Consider replacing the below with Enums
 // TODO: Add the additional rotors
+// Rotor mapping pulled from https://en.wikipedia.org/wiki/Enigma_rotor_details
 fn get_wiring(rotor_type: i32) -> Vec<char> {
     match rotor_type {
         1 => "EKMFLGDQVZNTOWYHXUSPAIBRCJ".chars().collect(),
@@ -71,6 +71,36 @@ fn get_wiring(rotor_type: i32) -> Vec<char> {
             rotor_type
         ),
     }
+}
+
+fn char_to_index(letter: char) -> usize {
+    assert!(letter.is_ascii_uppercase());
+    letter as usize - 65
+}
+
+fn index_to_char(int: usize) -> char {
+    assert!(int < 26);
+    (int as u8 + 65) as char
+}
+
+fn encode_wiring(wiring: Vec<char>) -> Vec<usize> {
+    let mut index_vec: Vec<usize> = Vec::new();
+
+    for letter in wiring {
+        index_vec.push(char_to_index(letter));
+    }
+
+    index_vec
+}
+
+fn reverse_wiring(forward_wiring: &Vec<usize>) -> Vec<usize> {
+    let mut inverse_wiring: Vec<usize> = vec![0; 26];
+
+    for (i, _) in forward_wiring.iter().enumerate() {
+        inverse_wiring[forward_wiring[i]] = i;
+    }
+
+    inverse_wiring
 }
 
 fn get_notch_position(rotor_type: i32) -> i32 {

@@ -26,6 +26,6 @@ fn generate_wiring_hashmap(letter_mapping: &str) -> HashMap<char, char> {
         hashmap.insert(string_bytes[index] as char, string_bytes[index + 1] as char);
         index += 2;
     }
-    println!("{:?}, {:?}", hashmap, string_bytes);
+    //println!("Plugboard: {:?}, {:?}", hashmap, string_bytes);
     return hashmap;
 }
