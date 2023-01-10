@@ -1,6 +1,8 @@
+use crate::charindex::{alphabet_string_to_u8_array, index_to_char};
+
 #[derive(Debug)]
 pub struct Reflector {
-    wiring: Vec<char>,
+    wiring: [u8; 26],
 }
 
 impl Reflector {
@@ -11,14 +13,25 @@ impl Reflector {
     }
 
     // TODO: Implement this
-    pub fn encode(index: u32) {}
+    pub fn encode(&self, index: u8) -> u8 {
+        let result: u8;
+        result = self.wiring[index as usize];
+        println!(
+            "{}, {} reflected = {}, {}",
+            index,
+            index_to_char(index),
+            result,
+            index_to_char(result)
+        );
+        result
+    }
 }
 
 // TODO: Probably can swap for Enums
-fn get_wiring(name: &str) -> Vec<char> {
+fn get_wiring(name: &str) -> [u8; 26] {
     match name {
-        "B" => "YRUHQSLDPXNGOKMIEBFZCWVJAT".chars().collect(),
-        "C" => "FVPJIAOYEDRZXWGCTKUQSBNMHL".chars().collect(),
+        "B" => alphabet_string_to_u8_array("YRUHQSLDPXNGOKMIEBFZCWVJAT"),
+        "C" => alphabet_string_to_u8_array("FVPJIAOYEDRZXWGCTKUQSBNMHL"),
         _ => panic!("Wiring for {} Reflector not found", name),
     }
 }

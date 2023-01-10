@@ -13,12 +13,18 @@ impl Plugboard {
     }
 
     // TODO: Implement this
-    pub fn encode(index: i32) {}
+    pub fn encode(&self, index: u8) -> u8 {
+        index
+    }
 }
 
 fn generate_wiring_hashmap(letter_mapping: &str) -> HashMap<char, char> {
-    let string_bytes: &[u8] = letter_mapping.as_bytes();
     let mut hashmap: HashMap<char, char> = HashMap::new();
+
+    if letter_mapping.len() < 2 {
+        return hashmap;
+    }
+    let string_bytes: &[u8] = letter_mapping.as_bytes();
 
     let mut index: usize = 0;
 

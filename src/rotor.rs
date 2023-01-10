@@ -1,4 +1,4 @@
-use crate::charindex::{char_to_index, index_to_char};
+use crate::charindex::{alphabet_string_to_u8_array, char_to_index, index_to_char};
 use std::collections::HashMap;
 
 #[derive(Debug)]
@@ -13,8 +13,8 @@ pub struct Rotor {
 
 impl Rotor {
     pub fn new(rotor_type: u8, rotor_position: u8, ring_setting: u8) -> Self {
-        let wiring = get_wiring(rotor_type);
-        let notch_position = get_notch_position(rotor_type);
+        let wiring: [u8; 26] = get_wiring(rotor_type);
+        let notch_position: u8 = get_notch_position(rotor_type);
         return Self::init(
             rotor_type,
             wiring,
@@ -26,17 +26,15 @@ impl Rotor {
 
     fn init(
         rotor_type: u8,
-        wiring: Vec<char>,
+        wiring: [u8; 26],
         rotor_position: u8,
         notch_position: u8,
         ring_setting: u8,
     ) -> Self {
-        let mut forward_wiring: [u8; 26] = encode_wiring(wiring);
-
         Rotor {
             rotor_type: rotor_type,
-            backward_wiring: reverse_wiring(&forward_wiring),
-            forward_wiring: forward_wiring,
+            backward_wiring: reverse_wiring(&wiring),
+            forward_wiring: wiring,
             rotor_position: rotor_position,
             notch_position: notch_position,
             ring_setting: ring_setting,
@@ -47,7 +45,7 @@ impl Rotor {
         self.notch_position == self.rotor_position
     }
 
-    pub fn increment_rotor_position(&mut self) {
+    pub fn turn_rotor(&mut self) {
         self.rotor_position = (self.rotor_position + 1) % 26;
     }
 
@@ -55,20 +53,23 @@ impl Rotor {
         self.rotor_position
     }
 
-    pub fn encode(&self, index: u8, is_forward: bool) -> u8 {
-        let offset: u8 = (26 + self.rotor_position - self.ring_setting);
-        let mut result: u8 = 0;
+    pub fn encode(&self, mut index: u8, is_forward: bool) -> u8 {
+        let offset: u8 = (26 + self.rotor_position - self.ring_setting) % 26;
+        let result: u8;
         if is_forward {
             result = (self.forward_wiring[((index + offset) % 26) as usize])
         } else {
             result = (self.backward_wiring[((index + offset) % 26) as usize])
         }
         println!(
-            "{}, {} encoded = {}, {}",
+            "{}, {} encoded with offset ({}, as char {} ) = {}, {}. Forward = {}",
             index,
             index_to_char(index),
+            offset % 26,
+            index_to_char((index + (offset % 26)) % 26),
             result,
-            index_to_char(result)
+            index_to_char(result),
+            is_forward
         );
         result
     }
@@ -77,11 +78,11 @@ impl Rotor {
 // TODO: Consider replacing the below with Enums
 // TODO: Add the additional rotors
 // Rotor mapping pulled from https://en.wikipedia.org/wiki/Enigma_rotor_details
-fn get_wiring(rotor_type: u8) -> Vec<char> {
+fn get_wiring(rotor_type: u8) -> [u8; 26] {
     match rotor_type {
-        1 => "EKMFLGDQVZNTOWYHXUSPAIBRCJ".chars().collect(),
-        2 => "AJDKSIRUXBLHWTMCQGZNPYFVOE".chars().collect(),
-        3 => "BDFHJLCPRTXVZNYEIWGAKMUSQO".chars().collect(),
+        1 => alphabet_string_to_u8_array("EKMFLGDQVZNTOWYHXUSPAIBRCJ"),
+        2 => alphabet_string_to_u8_array("AJDKSIRUXBLHWTMCQGZNPYFVOE"),
+        3 => alphabet_string_to_u8_array("BDFHJLCPRTXVZNYEIWGAKMUSQO"),
         _ => panic!(
             "No wiring mapping found for a Rotor under the rotor_type {}",
             rotor_type
@@ -110,9 +111,9 @@ fn reverse_wiring(forward_wiring: &[u8; 26]) -> [u8; 26] {
 
 fn get_notch_position(rotor_type: u8) -> u8 {
     match rotor_type {
-        1 => 16,
-        2 => 4,
-        3 => 21,
+        1 => 16, // Q
+        2 => 4,  // E
+        3 => 21, // V
         _ => panic!(
             "No notch position found for a Rotor under the rotor_type {}",
             rotor_type
