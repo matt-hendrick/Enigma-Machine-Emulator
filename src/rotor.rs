@@ -62,16 +62,18 @@ impl Rotor {
             result = (self.backward_wiring[((index + offset) % 26) as usize])
         }
         println!(
-            "{}, {} encoded with offset ({}, as char {} ) = {}, {}. Forward = {}",
+            "Index: {}, Char: {} encoded with offset ({}) as char {}  => new index {}, new char {} => corrected for offset ({}) becomes char {}. Forward = {}",
             index,
             index_to_char(index),
             offset % 26,
             index_to_char((index + (offset % 26)) % 26),
             result,
             index_to_char(result),
+            offset % 26,
+            index_to_char((result - (offset % 26)) % 26),
             is_forward
         );
-        result
+        (result - (offset % 26)) % 26
     }
 }
 
