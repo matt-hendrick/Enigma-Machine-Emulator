@@ -53,27 +53,45 @@ impl Rotor {
         self.rotor_position
     }
 
-    pub fn encode(&self, mut index: u8, is_forward: bool) -> u8 {
-        let offset: u8 = (26 + self.rotor_position - self.ring_setting) % 26;
+    fn get_offset(&self) -> u8 {
+        (26 + self.rotor_position - self.ring_setting) % 26
+    }
+
+    pub fn forward_encode(&self, index: u8) -> u8 {
+        self.encode(index, true)
+    }
+
+    pub fn backward_encode(&self, index: u8) -> u8 {
+        self.encode(index, false)
+    }
+
+    fn encode(&self, index: u8, is_forward: bool) -> u8 {
+        let offset: u8 = self.get_offset();
         let result: u8;
         if is_forward {
-            result = (self.forward_wiring[((index + offset) % 26) as usize])
+            result = self.forward_wiring[((index + offset) % 26) as usize]
         } else {
-            result = (self.backward_wiring[((index + offset) % 26) as usize])
+            result = self.backward_wiring[((index + offset) % 26) as usize]
         }
-        println!(
-            "Index: {}, Char: {} encoded with offset ({}) as char {}  => new index {}, new char {} => corrected for offset ({}) becomes char {}. Forward = {}",
-            index,
-            index_to_char(index),
-            offset % 26,
-            index_to_char((index + (offset % 26)) % 26),
-            result,
-            index_to_char(result),
-            offset % 26,
-            index_to_char((result - (offset % 26)) % 26),
-            is_forward
-        );
-        (result - (offset % 26)) % 26
+        // println!(
+        //     "Index: {}, Char: {} encoded with offset ({}) as char {}  => new index {}, new char {} => corrected for offset ({}) becomes char . Forward = {}",
+        //     index,
+        //     index_to_char(index),
+        //     offset % 26,
+        //     index_to_char((index + (offset % 26)) % 26),
+        //     result,
+        //     index_to_char(result),
+        //     offset % 26,
+        //     // index_to_char((result - (offset % 26)) % 26),
+        //     is_forward
+        // );
+
+        // correcting for offset
+        if offset > result {
+            26 - (offset - result)
+        } else {
+            (result - (offset % 26)) % 26
+        }
     }
 }
 
