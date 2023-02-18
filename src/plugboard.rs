@@ -1,8 +1,9 @@
+use crate::charindex::char_to_index;
 use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct Plugboard {
-    wiring: HashMap<char, char>,
+    wiring: HashMap<u8, u8>,
 }
 
 impl Plugboard {
@@ -12,14 +13,17 @@ impl Plugboard {
         }
     }
 
-    // TODO: Implement this
     pub fn encode(&self, index: u8) -> u8 {
-        index
+        if self.wiring.contains_key(&index) {
+            *self.wiring.get(&index).unwrap()
+        } else {
+            index
+        }
     }
 }
 
-fn generate_wiring_hashmap(letter_mapping: &str) -> HashMap<char, char> {
-    let mut hashmap: HashMap<char, char> = HashMap::new();
+fn generate_wiring_hashmap(letter_mapping: &str) -> HashMap<u8, u8> {
+    let mut hashmap: HashMap<u8, u8> = HashMap::new();
 
     if letter_mapping.len() < 2 {
         return hashmap;
@@ -29,9 +33,17 @@ fn generate_wiring_hashmap(letter_mapping: &str) -> HashMap<char, char> {
     let mut index: usize = 0;
 
     while index < string_bytes.len() - 1 {
-        hashmap.insert(string_bytes[index] as char, string_bytes[index + 1] as char);
+        // maps first letter to second
+        hashmap.insert(
+            char_to_index(string_bytes[index] as char),
+            char_to_index(string_bytes[index + 1] as char),
+        );
+        // maps second letter to first
+        hashmap.insert(
+            char_to_index(string_bytes[index + 1] as char),
+            char_to_index(string_bytes[index] as char),
+        );
         index += 2;
     }
-    //println!("Plugboard: {:?}, {:?}", hashmap, string_bytes);
     return hashmap;
 }

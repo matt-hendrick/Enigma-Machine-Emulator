@@ -1,9 +1,7 @@
-use crate::charindex::{alphabet_string_to_u8_array, char_to_index, index_to_char};
-use std::collections::HashMap;
+use crate::charindex::alphabet_string_to_u8_array;
 
 #[derive(Debug)]
 pub struct Rotor {
-    rotor_type: u8,
     forward_wiring: [u8; 26],
     backward_wiring: [u8; 26],
     rotor_position: u8,
@@ -15,24 +13,7 @@ impl Rotor {
     pub fn new(rotor_type: u8, rotor_position: u8, ring_setting: u8) -> Self {
         let wiring: [u8; 26] = get_wiring(rotor_type);
         let notch_position: u8 = get_notch_position(rotor_type);
-        return Self::init(
-            rotor_type,
-            wiring,
-            rotor_position,
-            notch_position,
-            ring_setting,
-        );
-    }
-
-    fn init(
-        rotor_type: u8,
-        wiring: [u8; 26],
-        rotor_position: u8,
-        notch_position: u8,
-        ring_setting: u8,
-    ) -> Self {
         Rotor {
-            rotor_type: rotor_type,
             backward_wiring: reverse_wiring(&wiring),
             forward_wiring: wiring,
             rotor_position: rotor_position,
@@ -47,10 +28,6 @@ impl Rotor {
 
     pub fn turn_rotor(&mut self) {
         self.rotor_position = (self.rotor_position + 1) % 26;
-    }
-
-    pub fn get_rotor_position(&self) -> u8 {
-        self.rotor_position
     }
 
     fn get_offset(&self) -> u8 {
@@ -108,15 +85,6 @@ fn get_wiring(rotor_type: u8) -> [u8; 26] {
             rotor_type
         ),
     }
-}
-
-fn encode_wiring(wiring: Vec<char>) -> [u8; 26] {
-    let mut index_array: [u8; 26] = [0; 26];
-    for (i, letter) in wiring.iter().enumerate() {
-        index_array[i] = char_to_index(*letter);
-    }
-
-    index_array
 }
 
 fn reverse_wiring(forward_wiring: &[u8; 26]) -> [u8; 26] {

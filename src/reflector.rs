@@ -12,17 +12,16 @@ impl Reflector {
         }
     }
 
-    // TODO: Implement this
     pub fn encode(&self, index: u8) -> u8 {
         let result: u8;
         result = self.wiring[index as usize];
-        println!(
-            "{}, {} reflected = {}, {}",
-            index,
-            index_to_char(index),
-            result,
-            index_to_char(result)
-        );
+        // println!(
+        //     "{}, {} reflected = {}, {}",
+        //     index,
+        //     index_to_char(index),
+        //     result,
+        //     index_to_char(result)
+        // );
         result
     }
 }

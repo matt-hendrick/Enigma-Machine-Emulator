@@ -18,18 +18,16 @@ pub struct Enigma {
 
 impl Enigma {
     pub fn new(
-        rotor_types: &str,
-        rotor_positions: &str,
-        ring_settings: &str,
+        rotor_types: [u8; 3],
+        rotor_positions: [u8; 3],
+        ring_settings: [u8; 3],
         reflector: &str,
         plugboard_mapping: &str,
     ) -> Self {
-        // TODO: Parse args and pass into Enigma constructor to allow customizing configuration
-
         Enigma {
-            right_rotor: Rotor::new(1, 0, 0),
-            middle_rotor: Rotor::new(2, 0, 0),
-            left_rotor: Rotor::new(3, 0, 0),
+            right_rotor: Rotor::new(rotor_types[0], rotor_positions[0], ring_settings[0]),
+            middle_rotor: Rotor::new(rotor_types[1], rotor_positions[1], ring_settings[1]),
+            left_rotor: Rotor::new(rotor_types[2], rotor_positions[2], ring_settings[2]),
             reflector: Reflector::new(reflector),
             plugboard: Plugboard::new(plugboard_mapping),
         }
@@ -37,16 +35,13 @@ impl Enigma {
 
     fn rotate(&mut self) {
         if self.middle_rotor.is_at_notch() {
-            println!("Turned middle and left");
             self.middle_rotor.turn_rotor();
             self.left_rotor.turn_rotor();
         } else if self.right_rotor.is_at_notch() {
-            println!("Turned middle");
             self.middle_rotor.turn_rotor();
         }
 
         // right always turns
-        println!("Turned right");
         self.right_rotor.turn_rotor();
     }
 
@@ -80,51 +75,6 @@ impl Enigma {
         let c9 = self.plugboard.encode(c8);
 
         //output
-
         c9
-    }
-
-    fn forward(&self, letter: char) {
-        let index = char_to_index(letter);
-        println!(
-            "Left forward {} = {}, {}",
-            letter,
-            self.left_rotor.forward_encode(index),
-            index_to_char(self.left_rotor.forward_encode(index))
-        );
-        println!(
-            "Middle forward {} = {}, {}",
-            letter,
-            self.middle_rotor.forward_encode(index),
-            index_to_char(self.middle_rotor.forward_encode(index))
-        );
-        println!(
-            "Right forward {} = {}, {}",
-            letter,
-            self.right_rotor.forward_encode(index),
-            index_to_char(self.right_rotor.forward_encode(index))
-        );
-    }
-
-    fn backward(&self, letter: char) {
-        let index = char_to_index(letter);
-        println!(
-            "Left backward {} = {}, {}",
-            letter,
-            self.left_rotor.backward_encode(index),
-            index_to_char(self.left_rotor.backward_encode(index))
-        );
-        println!(
-            "Middle backward {} = {}, {}",
-            letter,
-            self.middle_rotor.backward_encode(index),
-            index_to_char(self.middle_rotor.backward_encode(index))
-        );
-        println!(
-            "Right backward {} = {}, {}",
-            letter,
-            self.right_rotor.backward_encode(index),
-            index_to_char(self.right_rotor.backward_encode(index))
-        );
     }
 }
