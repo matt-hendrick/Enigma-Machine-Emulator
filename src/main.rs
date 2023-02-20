@@ -11,28 +11,29 @@ use crate::charindex::index_to_char;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// text to encode
-    #[arg(short = 'o')]
+    /// original text to encode/decode
+    #[arg(short = 'o', long)]
     original_text: String,
 
-    /// rotor type
-    #[arg(short = 't', default_value_t = ("123".to_string()))]
+    /// rotor type (three character long string. Valid rotor types are '1', '2', and '3')
+    #[arg(short = 't', long, default_value_t = ("123".to_string()))]
     rotor_types: String,
 
-    /// rotor position
-    #[arg(short = 'p', default_value_t = ("000".to_string()))]
+    /// rotor position (three character long string. Valid rotor positions are numbers between 0 and 25)
+    #[arg(short = 'p', long, default_value_t = ("000".to_string()))]
     rotor_position: String,
 
-    /// ring setting
-    #[arg(short = 's', default_value_t = ("000".to_string()))]
+    /// ring setting (three character long string. Valid ring settings  are numbers between 0 and 25)
+    #[arg(short = 's', long, default_value_t = ("000".to_string()))]
     ring_setting: String,
 
-    /// reflector
-    #[arg(short = 'r', default_value_t = ("B".to_string()))]
+    /// reflector (Valid reflector types are 'B' and 'C')
+    #[arg(short = 'r', long, default_value_t = ("B".to_string()))]
     reflector: String,
 
-    /// plugboard
-    #[arg(short = 'b', default_value_t = ("".to_string()))]
+    /// plugboard (string of chars that will be used to create a hashmap in which each even indexed alphabetic char is mapped to the next odd indexed alphabetic char.
+    /// Example 'AB CD' will swap 'A' <=> 'B' and swap 'C' <=> 'D'
+    #[arg(short = 'b', long, default_value_t = ("".to_string()))]
     plugboard: String,
 }
 
@@ -88,7 +89,7 @@ fn parse_rotor_types(rotor_type_string: String) -> [u8; 3] {
             panic!("{} is not a digit. All rotor typess must be digits.", char)
         }
         let num = char.to_owned().to_digit(10).unwrap() as u8;
-        if num < 1 || num > 3 {
+        if num < 1 || num > 5 {
             panic!("{} is not a valid rotor type.", char)
         } else {
             output_array[count] = num;
@@ -118,23 +119,22 @@ fn parse_rotor_positions_or_ring_settings(
     };
     let mut output_array: [u8; 3] = [0; 3];
 
+    let split_string = string_to_parse.split(",");
+
     let mut count = 0;
-    for char in string_to_parse.chars() {
+    for split_section in split_string {
         if count > 2 {
             panic!("Only 3 digits can be provided for {}s.", input_type)
         }
-        if !char.is_digit(10) {
-            panic!(
-                "{} is not a digit. All {}s must be digits.",
-                char, input_type
-            )
-        }
-        let num = char.to_owned().to_digit(10).unwrap() as u8;
+
+        let num = split_section.parse::<u8>().unwrap();
+
         if num > 25 {
-            panic!("{} is not a valid {}.", char, input_type)
+            panic!("{} is not a valid {}.", split_section, input_type)
         } else {
             output_array[count] = num;
         }
+
         count += 1;
     }
 

@@ -52,7 +52,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "enigma-machine-cli-emulator"
+name = "enigma"
 version = "0.1.0"
 dependencies = [
  "clap",

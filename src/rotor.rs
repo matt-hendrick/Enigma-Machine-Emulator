@@ -50,18 +50,6 @@ impl Rotor {
         } else {
             result = self.backward_wiring[((index + offset) % 26) as usize]
         }
-        // println!(
-        //     "Index: {}, Char: {} encoded with offset ({}) as char {}  => new index {}, new char {} => corrected for offset ({}) becomes char . Forward = {}",
-        //     index,
-        //     index_to_char(index),
-        //     offset % 26,
-        //     index_to_char((index + (offset % 26)) % 26),
-        //     result,
-        //     index_to_char(result),
-        //     offset % 26,
-        //     // index_to_char((result - (offset % 26)) % 26),
-        //     is_forward
-        // );
 
         // correcting for offset
         if offset > result {
@@ -72,14 +60,14 @@ impl Rotor {
     }
 }
 
-// TODO: Consider replacing the below with Enums
-// TODO: Add the additional rotors
 // Rotor mapping pulled from https://en.wikipedia.org/wiki/Enigma_rotor_details
 fn get_wiring(rotor_type: u8) -> [u8; 26] {
     match rotor_type {
         1 => alphabet_string_to_u8_array("EKMFLGDQVZNTOWYHXUSPAIBRCJ"),
         2 => alphabet_string_to_u8_array("AJDKSIRUXBLHWTMCQGZNPYFVOE"),
         3 => alphabet_string_to_u8_array("BDFHJLCPRTXVZNYEIWGAKMUSQO"),
+        4 => alphabet_string_to_u8_array("ESOVPZJAYQUIRHXLNFTGKDCMWB"),
+        5 => alphabet_string_to_u8_array("VZBRGITYUPSDNHLXAWMJQOFECK"),
         _ => panic!(
             "No wiring mapping found for a Rotor under the rotor_type {}",
             rotor_type
@@ -97,11 +85,14 @@ fn reverse_wiring(forward_wiring: &[u8; 26]) -> [u8; 26] {
     backward_wiring
 }
 
+// characters are zero-indexed
 fn get_notch_position(rotor_type: u8) -> u8 {
     match rotor_type {
         1 => 16, // Q
         2 => 4,  // E
         3 => 21, // V
+        4 => 10, // J
+        5 => 25, // Z
         _ => panic!(
             "No notch position found for a Rotor under the rotor_type {}",
             rotor_type

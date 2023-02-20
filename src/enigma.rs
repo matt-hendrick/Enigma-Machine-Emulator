@@ -1,12 +1,8 @@
-// mod plugboard;
-// mod reflector;
-// mod rotor;
-use crate::charindex::{char_to_index, index_to_char};
+use crate::charindex::char_to_index;
 use crate::plugboard::Plugboard;
 use crate::reflector::Reflector;
 use crate::rotor::Rotor;
 
-// Helpful 3d walkthrough of the machine's mechanics - https://www.youtube.com/watch?v=ybkkiGtJmkM
 #[derive(Debug)]
 pub struct Enigma {
     left_rotor: Rotor,

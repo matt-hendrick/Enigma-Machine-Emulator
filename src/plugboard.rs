@@ -32,7 +32,7 @@ fn generate_wiring_hashmap(letter_mapping: &str) -> HashMap<u8, u8> {
 
     let mut index: usize = 0;
 
-    while index < string_bytes.len() - 1 {
+    while index < string_bytes.len() - 1 && hashmap.len() < 20 {
         // maps first letter to second
         hashmap.insert(
             char_to_index(string_bytes[index] as char),
