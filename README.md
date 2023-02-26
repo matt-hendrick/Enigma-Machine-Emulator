@@ -34,9 +34,11 @@ The following command line arguments can be used to alter the configuration of t
 
 `enigma.exe -o test` encodes the text as `ZFDU` using the default configuration.
 
-`enigma.exe -o test -t 543 -p 1,2,3 -s 4,5,6 -r c -b "AB CD EF GH"` encodes the text as `hfjl` with the settings being left rotor (III, rotor position 3 = 'D', ring setting 6 = 'G'), middle rotor (IV, rotor position 2 = 'C', ring setting 5 = 'F'), right rotor (V, rotor position 1 = 'B', ring setting 4 = 'E'), reflector 'C', and plugboard mapping of 'AB CD EF GH'
+`enigma.exe -o test -t 543 -p 1,2,3 -s 4,5,6 -r c -b "AB CD EF GH"` encodes the text as `HFJL` with the settings being left rotor (III, rotor position 3 = 'D', ring setting 6 = 'G'), middle rotor (IV, rotor position 2 = 'C', ring setting 5 = 'F'), right rotor (V, rotor position 1 = 'B', ring setting 4 = 'E'), reflector 'C', and plugboard mapping of 'AB CD EF GH'
 
-### Helpful resources on the mechanics of the Enigma Machine
+See the unit tests in main.rs for additional examples of encrypting and decrypting different inputs.
+
+## Helpful resources on the mechanics of the Enigma Machine
 
 - A [Computerphile video on building (and cracking) an Enigma machine in Java](https://www.youtube.com/watch?v=RzWB5jL5RX0). See that Java implementation [here](https://github.com/mikepound/enigma)
 

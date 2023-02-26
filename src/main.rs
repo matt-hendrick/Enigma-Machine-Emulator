@@ -6,8 +6,6 @@ mod rotor;
 use clap::Parser;
 use enigma::Enigma;
 
-use crate::charindex::index_to_char;
-
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -54,27 +52,11 @@ fn main() {
         &parsed_plugboard_mapping,
     );
 
-    let original_text = args.original_text.to_uppercase();
-    let mut encoded_text: String = String::new();
-
-    let mut count = 0;
-    for char in original_text.chars() {
-        if count % 5 == 0 {
-            encoded_text.push(' ');
-        }
-        if !char.is_ascii_uppercase() {
-            continue;
-        } else {
-            let result = enigma.encrypt(char);
-            encoded_text.push(index_to_char(result));
-        }
-
-        count += 1;
-    }
+    let encrypted_text = enigma.encrypt_string(args.original_text.clone());
 
     println!(
         "Encrypted text = {}. Original Text = {}",
-        encoded_text, original_text
+        encrypted_text, args.original_text
     );
 }
 
@@ -164,4 +146,98 @@ fn parse_plugboard_mapping(plugboard_string: String) -> String {
         }
     }
     output_string
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::Enigma;
+    #[test]
+    fn encrypt_decrypt_abcd() {
+        let mut enigma = Enigma::new([1, 2, 3], [0, 0, 0], [0, 0, 0], "B", "");
+        let original_text = "ABCD";
+        let encrypted_text = enigma.encrypt_string(original_text.to_string());
+        assert_eq!(encrypted_text, "FUVE");
+
+        enigma = Enigma::new([1, 2, 3], [0, 0, 0], [0, 0, 0], "B", "");
+        let decrypted_text = enigma.encrypt_string(encrypted_text);
+        assert_eq!(decrypted_text, "ABCD");
+    }
+
+    #[test]
+    fn encrypt_decrypt_abcd_alt_config() {
+        let mut enigma = Enigma::new([3, 1, 2], [19, 2, 14], [11, 22, 6], "C", "ABCDGLZUVFJP");
+        let original_text = "ABCD";
+        let encrypted_text = enigma.encrypt_string(original_text.to_string());
+        assert_eq!(encrypted_text, "MHIF");
+
+        enigma = Enigma::new([3, 1, 2], [19, 2, 14], [11, 22, 6], "C", "ABCDGLZUVFJP");
+        let decrypted_text = enigma.encrypt_string(encrypted_text);
+        assert_eq!(decrypted_text, "ABCD");
+    }
+
+    #[test]
+    fn encrypt_decrypt_sentence() {
+        let mut enigma = Enigma::new([1, 2, 3], [0, 0, 0], [0, 0, 0], "B", "");
+        let original_text = "This is an Enigma machine emulator built in Rust that can be run from the command line.";
+        let encrypted_text = enigma.encrypt_string(original_text.to_string());
+        assert_eq!(
+            encrypted_text,
+            "ZPJJSVSCGWEBKDKJMXCDQRWLRDBCGJWPYMMHSKYRGLKLKCYFRIOVTEJLDAGPUYHSBUHNUQ"
+        );
+
+        enigma = Enigma::new([1, 2, 3], [0, 0, 0], [0, 0, 0], "B", "");
+        let decrypted_text = enigma.encrypt_string(encrypted_text);
+        assert_eq!(
+            decrypted_text,
+            "THISISANENIGMAMACHINEEMULATORBUILTINRUSTTHATCANBERUNFROMTHECOMMANDLINE"
+        )
+    }
+
+    #[test]
+    fn encrypt_decrypt_sentence_alt_config() {
+        let mut enigma = Enigma::new([3, 1, 2], [19, 2, 14], [11, 22, 6], "C", "ABCDGLZUVFJP");
+        let original_text = "This is an Enigma machine emulator built in Rust that can be run from the command line.";
+        let encrypted_text = enigma.encrypt_string(original_text.to_string());
+        assert_eq!(
+            encrypted_text,
+            "YBCUOBEYOPKMCCKMTNPAJVIKSSRYXIADAJCJEVHOHTMIVDRALDNFKTECHMHUSYRZLSIBZM"
+        );
+
+        enigma = Enigma::new([3, 1, 2], [19, 2, 14], [11, 22, 6], "C", "ABCDGLZUVFJP");
+        let decrypted_text = enigma.encrypt_string(encrypted_text);
+        assert_eq!(
+            decrypted_text,
+            "THISISANENIGMAMACHINEEMULATORBUILTINRUSTTHATCANBERUNFROMTHECOMMANDLINE"
+        )
+    }
+
+    #[test]
+    fn encrypt_decrypt_paragraph() {
+        let mut enigma = Enigma::new([1, 2, 3], [0, 0, 0], [0, 0, 0], "B", "");
+        let original_text = "The Enigma machine is a cipher device developed and used in the early- to mid-20th century to protect commercial, diplomatic, and military communication. It was employed extensively by Nazi Germany during World War II, in all branches of the German military. The Enigma machine was considered so secure that it was used to encipher the most top-secret messages. The Enigma has an electromechanical rotor mechanism that scrambles the 26 letters of the alphabet. In typical use, one person enters text on the Enigma's keyboard and another person writes down which of the 26 lights above the keyboard illuminated at each key press. If plain text is entered, the illuminated letters are the ciphertext. Entering ciphertext transforms it back into readable plaintext. The rotor mechanism changes the electrical connections between the keys and the lights with each keypress.";
+        let encrypted_text = enigma.encrypt_string(original_text.to_string());
+        assert_eq!(
+            encrypted_text,
+            "ZPTDBAMVIDJUROAXUEOGDWLPLACJQPAWJSTEYIDBIZWCRNBZUHRXAPIMEDKKLZSRXOOSNFQSMXJHOXMEZQBICEQKLXXXRCPJOENDYYEPCIVXWOJRVZDKLDSKLRJZKJMRJBPYGXDMBFMVUROXBGXDTKRGQOSVIPNVJZGPOTRYDNDBAVLSLUQQXCRSUCIXNVCVILIBWBHDPZVKVPXPEBASXQJNZXBBEUUQJZSRNDXUDCJJOVWXDTYBGFUWVHBJNKPQHXMPRPEDZVDBWFJFRNAPCQSQXJDKMQJMQZTJINWFOITXOHNYVZZUDVMJSTEOETCCXGRQEUMXWIDGVYTAOWGOOLJXTWFXTTWPGAIOLQCGEQIJYHKVLZLJCOOYXMRZXGGQVOQIWOMFLTGUXRHHJKRLZSDNILSCAAWKXZMDVNPFQXCACBYLBCETIBHCJELENTTXLLBPBBROTBSYTIJJDHRUOSCVJBCGFXQCCGXFYYCESITPOKYHSPXQVVIMXZGJGBTFKDFAQYGOWYOCIYZCCAFMKODIGRIGDEBFWWIZTOILUQOYCLVVYJJCFFUFPNDRYOFOPAAXLWFJGJYBAFEUZQESZVGUTWQXMNSHXYOKAUBGQCKPLFSJMOQQWGOQEIETKJQYCJRYNTKVIZNNMJHVAEVZYWRZBDCHGMNUQATLIMPFQJMWVMLCSWLMAJXZCXCEVRMIOZQKMW"
+        );
+
+        enigma = Enigma::new([1, 2, 3], [0, 0, 0], [0, 0, 0], "B", "");
+        let decrypted_text = enigma.encrypt_string(encrypted_text);
+        assert_eq!(decrypted_text, "THEENIGMAMACHINEISACIPHERDEVICEDEVELOPEDANDUSEDINTHEEARLYTOMIDTHCENTURYTOPROTECTCOMMERCIALDIPLOMATICANDMILITARYCOMMUNICATIONITWASEMPLOYEDEXTENSIVELYBYNAZIGERMANYDURINGWORLDWARIIINALLBRANCHESOFTHEGERMANMILITARYTHEENIGMAMACHINEWASCONSIDEREDSOSECURETHATITWASUSEDTOENCIPHERTHEMOSTTOPSECRETMESSAGESTHEENIGMAHASANELECTROMECHANICALROTORMECHANISMTHATSCRAMBLESTHELETTERSOFTHEALPHABETINTYPICALUSEONEPERSONENTERSTEXTONTHEENIGMASKEYBOARDANDANOTHERPERSONWRITESDOWNWHICHOFTHELIGHTSABOVETHEKEYBOARDILLUMINATEDATEACHKEYPRESSIFPLAINTEXTISENTEREDTHEILLUMINATEDLETTERSARETHECIPHERTEXTENTERINGCIPHERTEXTTRANSFORMSITBACKINTOREADABLEPLAINTEXTTHEROTORMECHANISMCHANGESTHEELECTRICALCONNECTIONSBETWEENTHEKEYSANDTHELIGHTSWITHEACHKEYPRESS");
+    }
+
+    #[test]
+    fn encrypt_decrypt_paragraph_alt_config() {
+        let mut enigma = Enigma::new([3, 1, 2], [19, 2, 14], [11, 22, 6], "C", "ABCDGLZUVFJP");
+        let original_text = "The Enigma machine is a cipher device developed and used in the early- to mid-20th century to protect commercial, diplomatic, and military communication. It was employed extensively by Nazi Germany during World War II, in all branches of the German military. The Enigma machine was considered so secure that it was used to encipher the most top-secret messages. The Enigma has an electromechanical rotor mechanism that scrambles the 26 letters of the alphabet. In typical use, one person enters text on the Enigma's keyboard and another person writes down which of the 26 lights above the keyboard illuminated at each key press. If plain text is entered, the illuminated letters are the ciphertext. Entering ciphertext transforms it back into readable plaintext. The rotor mechanism changes the electrical connections between the keys and the lights with each keypress.";
+        let encrypted_text = enigma.encrypt_string(original_text.to_string());
+        assert_eq!(
+            encrypted_text,
+            "YBLCXXIGYAHRPPCRJCUKPWOTICFSGVTIGHVKSCDKUKJYAHMUIXWIHHDNRGZXAULJVHRHIQGWJXAIXLKDAMGSOQUVDNLYOBWFXNWNIJGJAXQHYPNHCTXSWLUTXAWTZXLCUXKLMPJCECJYKYLXKLXAPWACNTESUVKCHFBZFORRCKAWFFKRUDEVHNXMEGOYYZUYSOPYJFVMTTZTJUZMWUYHJDTFJFNHLUMPXHMIRUPJHYDFYMHSHAFXPXHLVNTDLEWFKQYGNQETJSAHWGVDJLBPXIUKLQGPXYAYDHCGOJAHXQHHJTXGXVFBWAFXFVATQVOWTFNWUHRLURRHGTTLEQHLHDERCMSZYFMNZXJOGMCWMDRXDYTTZSGCWKMEFBCCFNGEZUFWFKQHNTADYQLFAFHNIGWNGVJKZPAPRBIFCKBDKKPNKWERFFPLSEIHQGGXCMLVPNLJBBYUXJELFNMTCHBLXTZNSNJEKRADYVSVXRNNOLXYJKIKKQOEEFVQPLORNPGIMFHGXLOPQKPWGHNKWWFBMQOCFUEQIWTXBDBGPLIYZLDRYMTPGQWVQRZZCQCMSMDAWCXRBHVIBZRHYUQXRBPRJJEHXXLBGFQCEJPAUHWYGZSLCWMVZMPVBDLYZSLTSDFTZZQNQWQFQZZQBYDJDEPYXJBICWHLDBGAUZWETJRPUMEWUZPDIYRXHYTTSPSELIOBUSZULK"
+        );
+
+        enigma = Enigma::new([3, 1, 2], [19, 2, 14], [11, 22, 6], "C", "ABCDGLZUVFJP");
+        let decrypted_text = enigma.encrypt_string(encrypted_text);
+        assert_eq!(decrypted_text, "THEENIGMAMACHINEISACIPHERDEVICEDEVELOPEDANDUSEDINTHEEARLYTOMIDTHCENTURYTOPROTECTCOMMERCIALDIPLOMATICANDMILITARYCOMMUNICATIONITWASEMPLOYEDEXTENSIVELYBYNAZIGERMANYDURINGWORLDWARIIINALLBRANCHESOFTHEGERMANMILITARYTHEENIGMAMACHINEWASCONSIDEREDSOSECURETHATITWASUSEDTOENCIPHERTHEMOSTTOPSECRETMESSAGESTHEENIGMAHASANELECTROMECHANICALROTORMECHANISMTHATSCRAMBLESTHELETTERSOFTHEALPHABETINTYPICALUSEONEPERSONENTERSTEXTONTHEENIGMASKEYBOARDANDANOTHERPERSONWRITESDOWNWHICHOFTHELIGHTSABOVETHEKEYBOARDILLUMINATEDATEACHKEYPRESSIFPLAINTEXTISENTEREDTHEILLUMINATEDLETTERSARETHECIPHERTEXTENTERINGCIPHERTEXTTRANSFORMSITBACKINTOREADABLEPLAINTEXTTHEROTORMECHANISMCHANGESTHEELECTRICALCONNECTIONSBETWEENTHEKEYSANDTHELIGHTSWITHEACHKEYPRESS");
+    }
 }

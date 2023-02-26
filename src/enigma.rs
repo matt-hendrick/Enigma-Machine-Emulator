@@ -1,4 +1,4 @@
-use crate::charindex::char_to_index;
+use crate::charindex::{char_to_index, index_to_char};
 use crate::plugboard::Plugboard;
 use crate::reflector::Reflector;
 use crate::rotor::Rotor;
@@ -41,7 +41,23 @@ impl Enigma {
         self.right_rotor.turn_rotor();
     }
 
-    pub fn encrypt(&mut self, letter: char) -> u8 {
+    pub fn encrypt_string(&mut self, raw_string: String) -> String {
+        let original_text = raw_string.to_uppercase();
+        let mut encrypted_text: String = String::new();
+
+        for char in original_text.chars() {
+            if !char.is_ascii_uppercase() {
+                continue;
+            } else {
+                println!("{}, {:?}", char, encrypted_text);
+                let result = self.encrypt_char(char);
+                encrypted_text.push(index_to_char(result));
+            }
+        }
+        encrypted_text
+    }
+
+    fn encrypt_char(&mut self, letter: char) -> u8 {
         self.rotate();
         let letter_char_index: u8 = char_to_index(letter);
 
