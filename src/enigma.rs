@@ -3,7 +3,7 @@ use crate::plugboard::Plugboard;
 use crate::reflector::Reflector;
 use crate::rotor::Rotor;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Enigma {
     left_rotor: Rotor,
     middle_rotor: Rotor,
@@ -27,6 +27,10 @@ impl Enigma {
             reflector: Reflector::new(reflector),
             plugboard: Plugboard::new(plugboard_mapping),
         }
+    }
+
+    pub fn new_default_config() -> Self {
+        Enigma::new([1, 2, 3], [0, 0, 0], [0, 0, 0], "B", "")
     }
 
     fn rotate(&mut self) {
@@ -88,5 +92,103 @@ impl Enigma {
 
         //output
         c9
+    }
+
+    pub fn set_rotor_type(&mut self, rotor_number: u8, new_rotor_type: u8) {
+        if rotor_number < 1 || rotor_number > 3 {
+            panic!("{} is an invalid rotor number", rotor_number);
+        }
+
+        if rotor_number == 1 {
+            self.right_rotor = Rotor::new(
+                new_rotor_type,
+                self.right_rotor.get_rotor_position(),
+                self.right_rotor.get_ring_setting(),
+            );
+        } else if rotor_number == 2 {
+            self.middle_rotor = Rotor::new(
+                new_rotor_type,
+                self.middle_rotor.get_rotor_position(),
+                self.middle_rotor.get_ring_setting(),
+            );
+        } else {
+            self.left_rotor = Rotor::new(
+                new_rotor_type,
+                self.left_rotor.get_rotor_position(),
+                self.left_rotor.get_ring_setting(),
+            );
+        }
+    }
+
+    pub fn set_reflector(&mut self, reflector: String) {
+        if reflector != "B" && reflector != "C" {
+            panic!("{} is an invalid reflector", reflector);
+        }
+
+        self.reflector = Reflector::new(&reflector);
+    }
+
+    pub fn get_reflector(&self) -> String {
+        self.reflector.get_name()
+    }
+
+    pub fn set_rotor_position(&mut self, rotor_number: u8, new_rotor_position: u8) {
+        if rotor_number < 1 || rotor_number > 3 {
+            panic!("{} is an invalid rotor number", rotor_number);
+        }
+
+        if rotor_number == 1 {
+            self.right_rotor.set_rotor_position(new_rotor_position);
+        } else if rotor_number == 2 {
+            self.middle_rotor.set_rotor_position(new_rotor_position);
+        } else {
+            self.left_rotor.set_rotor_position(new_rotor_position);
+        }
+    }
+
+    pub fn get_rotor_position(&self, rotor_number: u8) -> u8 {
+        if rotor_number < 1 || rotor_number > 3 {
+            panic!("{} is an invalid rotor number", rotor_number);
+        }
+
+        if rotor_number == 1 {
+            self.right_rotor.get_rotor_position()
+        } else if rotor_number == 2 {
+            self.middle_rotor.get_rotor_position()
+        } else {
+            self.left_rotor.get_rotor_position()
+        }
+    }
+
+    pub fn set_ring_setting(&mut self, rotor_number: u8, new_ring_setting: u8) {
+        if rotor_number < 1 || rotor_number > 3 {
+            panic!("{} is an invalid rotor number", rotor_number);
+        }
+
+        if rotor_number == 1 {
+            self.right_rotor.set_ring_setting(new_ring_setting);
+        } else if rotor_number == 2 {
+            self.middle_rotor.set_ring_setting(new_ring_setting);
+        } else {
+            self.left_rotor.set_ring_setting(new_ring_setting);
+        }
+    }
+
+    pub fn get_ring_setting(&self, rotor_number: u8) -> u8 {
+        if rotor_number < 1 || rotor_number > 3 {
+            panic!("{} is an invalid rotor number", rotor_number);
+        }
+
+        if rotor_number == 1 {
+            self.right_rotor.get_ring_setting()
+        } else if rotor_number == 2 {
+            self.middle_rotor.get_ring_setting()
+        } else {
+            self.left_rotor.get_ring_setting()
+        }
+    }
+
+    pub fn set_plugboard_mapping(&mut self, new_plugboard_mapping: String) {
+        self.plugboard = Plugboard::new(&new_plugboard_mapping.to_uppercase());
     }
 }

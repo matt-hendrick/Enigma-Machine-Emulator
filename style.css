@@ -1,0 +1,63 @@
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+h1 {
+  font-family: Bookman Old Style;
+  color: #dc8449;
+}
+
+h2 {
+  color: #dc8449;
+}
+
+button {
+  background: #dc8449;
+  border: 0.0625em solid #dc8449;
+  border-radius: 0.375em;
+  box-shadow: rgb(0 0 0 / 10%) 0.0625em 0.125em 0.25em;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: nunito, roboto, proxima-nova, 'proxima nova', sans-serif;
+  font-size: 1em;
+  font-weight: 800;
+  line-height: 1em;
+  min-height: 2.5em;
+  outline: 0;
+  padding: 0.75em 0.875em;
+  margin: 1em;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+}
+
+.min-width-30 {
+  min-width: 30%;
+}
+
+label {
+  color: #dc8449;
+  margin-right: 0.5em;
+  font-family: nunito, roboto, proxima-nova, 'proxima nova', sans-serif;
+  font-size: 1em;
+  font-weight: 800;
+  text-align: center;
+}

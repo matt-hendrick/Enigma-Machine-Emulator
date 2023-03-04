@@ -1,7 +1,7 @@
 use crate::charindex::char_to_index;
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Plugboard {
     wiring: HashMap<u8, u8>,
 }
@@ -33,17 +33,21 @@ fn generate_wiring_hashmap(letter_mapping: &str) -> HashMap<u8, u8> {
     let mut index: usize = 0;
 
     while index < string_bytes.len() - 1 && hashmap.len() < 20 {
-        // maps first letter to second
-        hashmap.insert(
-            char_to_index(string_bytes[index] as char),
-            char_to_index(string_bytes[index + 1] as char),
-        );
-        // maps second letter to first
-        hashmap.insert(
-            char_to_index(string_bytes[index + 1] as char),
-            char_to_index(string_bytes[index] as char),
-        );
-        index += 2;
+        if !(string_bytes[index] as char).is_ascii_uppercase() {
+            index += 1;
+        } else {
+            // maps first letter to second
+            hashmap.insert(
+                char_to_index(string_bytes[index] as char),
+                char_to_index(string_bytes[index + 1] as char),
+            );
+            // maps second letter to first
+            hashmap.insert(
+                char_to_index(string_bytes[index + 1] as char),
+                char_to_index(string_bytes[index] as char),
+            );
+            index += 2;
+        }
     }
     return hashmap;
 }

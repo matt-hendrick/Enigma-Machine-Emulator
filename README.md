@@ -1,5 +1,11 @@
 # Enigma Machine Emulator
 
+This is an [in-browser Enigma machine emulator](https://enigma-machine-emulator.web.app/) built in Rust with the Yew framework and compiled into WebAssembly (WASM). This implementation includes the 5 rotors used by the Enigma I variant and the Enigma M3 Army variant.
+
+---
+
+## Readme from an Earlier Command Line Version of this Emulator
+
 This is an Enigma machine emulator built in Rust that can be run from the command line. This implementation includes the 5 rotors used by the Enigma I variant and the Enigma M3 Army variant.
 
 ## Default Configuration

@@ -1,6 +1,6 @@
 use crate::charindex::alphabet_string_to_u8_array;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Rotor {
     forward_wiring: [u8; 26],
     backward_wiring: [u8; 26],
@@ -20,6 +20,28 @@ impl Rotor {
             notch_position: notch_position,
             ring_setting: ring_setting,
         }
+    }
+
+    pub fn set_rotor_position(&mut self, new_rotor_position: u8) {
+        if new_rotor_position > 25 {
+            panic!("{} is an invalid rotor position", new_rotor_position);
+        }
+        self.rotor_position = new_rotor_position;
+    }
+
+    pub fn get_rotor_position(&self) -> u8 {
+        self.rotor_position
+    }
+
+    pub fn set_ring_setting(&mut self, new_ring_setting: u8) {
+        if new_ring_setting > 25 {
+            panic!("{} is an invalid ring setting", new_ring_setting);
+        }
+        self.ring_setting = new_ring_setting;
+    }
+
+    pub fn get_ring_setting(&self) -> u8 {
+        self.ring_setting
     }
 
     pub fn is_at_notch(&self) -> bool {
